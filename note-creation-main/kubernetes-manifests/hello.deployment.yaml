@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spanner-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spanner-demo
+  template:
+    metadata:
+      labels:
+        app: spanner-demo
+    spec:
+      containers:
+        - name: server
+          image: spanner-demo
+          ports:
+            - containerPort: 8082
+          env:
+            - name: PORT
+              value: "8082"
+            # This environment variable enables debugging support for the container.
+            # Remove this to disable the debug build.
+            - name: JAVA_TOOL_OPTIONS
+              value: -agentlib:jdwp=transport=dt_socket,server=y,address=5005,suspend=n,quiet=y
+          readinessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 5
